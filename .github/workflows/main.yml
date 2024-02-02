@@ -1,0 +1,30 @@
+name: CI
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+env:
+  DEVELOPER_DIR: /Applications/Xcode_15.2.app
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build macOS
+        run: set -o pipefail && xcodebuild -scheme FontVertexBuilder build -destination "generic/platform=macOS" | xcpretty
+      - name: Build iOS
+        run: set -o pipefail && xcodebuild -scheme FontVertexBuilder build -destination "generic/platform=iOS" | xcpretty
+      - name: Build visionOS
+        run: set -o pipefail && xcodebuild -scheme FontVertexBuilder build -destination "generic/platform=visionOS" | xcpretty
+  test:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v3
+      - name: Test macOS
+        run: set -o pipefail && xcodebuild -scheme FontVertexBuilder test -destination "platform=macOS,arch=arm64" | xcpretty
+      - name: Test iOS
+        run: set -o pipefail && xcodebuild -scheme FontVertexBuilder test -destination "name=iPhone 14 Pro" | xcpretty
+      - name: Test visionOS
+        run: set -o pipefail && xcodebuild -scheme FontVertexBuilder test -destination "name=Apple Vision Pro" | xcpretty
