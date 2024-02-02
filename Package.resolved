@@ -1,0 +1,23 @@
+{
+  "pins" : [
+    {
+      "identity" : "simplesimdswift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/yukiny0811/SimpleSimdSwift",
+      "state" : {
+        "revision" : "4a0b195450e42f8a46b0a77f183b1ff116696697",
+        "version" : "1.0.1"
+      }
+    },
+    {
+      "identity" : "swiftycoretext",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/yukiny0811/SwiftyCoreText",
+      "state" : {
+        "revision" : "ed0583f3ecc5c4e4d3ec56c8a9752d6e9a1e9b86",
+        "version" : "1.0.0"
+      }
+    }
+  ],
+  "version" : 2
+}
