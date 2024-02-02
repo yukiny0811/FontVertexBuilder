@@ -46,6 +46,8 @@ open class PathText {
         case bottom = 2
     }
     
+    public var calculatedPaths: [LetterPath] = []
+    
     var verticalAlignment: VerticalAlignment = .center
     var textAlignment: CTTextAlignment = .natural
     var text = ""
@@ -66,7 +68,6 @@ open class PathText {
     var capHeight: Float { Float(ctFont.getCapHeight()) }
     var xHeight: Float { Float(ctFont.getXHeight()) }
     var ctFont: SwiftyCTFont
-    var calculatedPaths: [LetterPath] = []
     var isClockwiseFont: Bool = false
     var angleLimit: Float = 7.5 * Float.pi / 180.0
     var suggestFrameSize: CGSize? {
