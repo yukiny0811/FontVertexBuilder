@@ -236,7 +236,7 @@ public extension GlyphUtil {
         
         public static func triangulate(_ calculatedPaths: [LetterPath]) -> [TriangulatedLetterPath] {
             var triangulatedPaths = triangulate(calculatedPaths, isClockwiseFont: true)
-            if triangulatedPaths.count == 0 {
+            if triangulatedPaths.reduce(0, { r, elem in r + elem.glyphLines.count }) == 0 {
                 triangulatedPaths = triangulate(calculatedPaths, isClockwiseFont: false)
             }
             return triangulatedPaths
