@@ -68,7 +68,10 @@ open class PathText {
     var capHeight: Float { Float(ctFont.getCapHeight()) }
     var xHeight: Float { Float(ctFont.getXHeight()) }
     var ctFont: SwiftyCTFont
+    
+    @available(*, deprecated, message: "detection of font turn is now auto")
     var isClockwiseFont: Bool = false
+    
     var angleLimit: Float = 7.5 * Float.pi / 180.0
     var suggestFrameSize: CGSize? {
         guard let frameSetter = frameSetter else { return nil }
@@ -147,6 +150,7 @@ open class PathText {
         return attributedText
     }
 
+    @available(*, deprecated, message: "use init?() instead")
     public init(
         text: String,
         fontName: String = "AppleSDGothicNeo-Bold",
@@ -167,6 +171,28 @@ open class PathText {
         self.kern = kern
         self.lineSpacing = lineSpacing
         self.isClockwiseFont = isClockwiseFont
+        ctFont = SwiftyCTFont(name: fontName, size: CGFloat(fontSize), matrix: nil, options: nil)
+        setupData()
+    }
+    
+    public init(
+        text: String,
+        fontName: String = "AppleSDGothicNeo-Bold",
+        fontSize: Float,
+        bounds: CGSize = .zero,
+        pivot: f2 = .zero,
+        textAlignment: CTTextAlignment = .natural,
+        verticalAlignment: VerticalAlignment = .center,
+        kern: Float = 0.0,
+        lineSpacing: Float = 0.0
+    ) {
+        self.text = text
+        textBounds = bounds
+        self.pivot = pivot
+        self.textAlignment = textAlignment
+        self.verticalAlignment = verticalAlignment
+        self.kern = kern
+        self.lineSpacing = lineSpacing
         ctFont = SwiftyCTFont(name: fontName, size: CGFloat(fontSize), matrix: nil, options: nil)
         setupData()
     }
