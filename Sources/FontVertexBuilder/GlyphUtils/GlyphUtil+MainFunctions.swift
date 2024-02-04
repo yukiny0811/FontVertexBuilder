@@ -234,6 +234,14 @@ public extension GlyphUtil {
             return triangulatedPaths
         }
         
+        public static func triangulate(_ calculatedPaths: [LetterPath]) -> [TriangulatedLetterPath] {
+            var triangulatedPaths = triangulate(calculatedPaths, isClockwiseFont: true)
+            if triangulatedPaths.count == 0 {
+                triangulatedPaths = triangulate(calculatedPaths, isClockwiseFont: false)
+            }
+            return triangulatedPaths
+        }
+        
         public static func triangulateWithoutLetterOffset(_ calculatedPaths: [LetterPath], isClockwiseFont: Bool) -> (paths: [TriangulatedLetterPath], letterOffsets: [f3]) {
             var triangulatedPaths: [TriangulatedLetterPath] = []
             var letterOffsets: [f3] = []
