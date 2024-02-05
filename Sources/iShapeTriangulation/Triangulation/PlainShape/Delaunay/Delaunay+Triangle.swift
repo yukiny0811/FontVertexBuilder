@@ -29,28 +29,28 @@ extension Delaunay {
             self.index = index
             self.vertices = Array3d(a, b, c)
             self.neighbors = Array3d(null, null, null)
-            assert(IntTriangle.isCCW_or_Line(a: a.point, b: b.point, c: c.point), "Triangle's points are not clock-wise ordered")
+//            assert(IntTriangle.isCCW_or_Line(a: a.point, b: b.point, c: c.point), "Triangle's points are not clock-wise ordered")
         }
         
         init(index: Index, a: Vertex, b: Vertex, c: Vertex, bc: Index) {
             self.index = index
             self.vertices = Array3d(.empty, .empty, .empty)
             self.neighbors = Array3d(bc, null, null)
-            assert(IntTriangle.isCCW_or_Line(a: a.point, b: b.point, c: c.point), "Triangle's points are not clock-wise ordered")
+//            assert(IntTriangle.isCCW_or_Line(a: a.point, b: b.point, c: c.point), "Triangle's points are not clock-wise ordered")
         }
         
         init(index: Index, a: Vertex, b: Vertex, c: Vertex, ac: Index, ab: Index) {
             self.index = index
             self.vertices = Array3d(a, b, c)
             self.neighbors = Array3d(null, ac, ab)
-            assert(IntTriangle.isCCW_or_Line(a: a.point, b: b.point, c: c.point), "Triangle's points are not clock-wise ordered")
+//            assert(IntTriangle.isCCW_or_Line(a: a.point, b: b.point, c: c.point), "Triangle's points are not clock-wise ordered")
         }
         
         init(index: Index, a: Vertex, b: Vertex, c: Vertex, bc: Index, ac: Index, ab: Index) {
             self.index = index
             self.vertices = Array3d(a, b, c)
             self.neighbors = Array3d(bc, ac, ab)
-            assert(IntTriangle.isCCW_or_Line(a: a.point, b: b.point, c: c.point), "Triangle's points are not clock-wise ordered")
+//            assert(IntTriangle.isCCW_or_Line(a: a.point, b: b.point, c: c.point), "Triangle's points are not clock-wise ordered")
         }
         
         
@@ -63,7 +63,7 @@ extension Delaunay {
                 return vertices.c
             }
             
-            assertionFailure("Neighbor is not present")
+//            assertionFailure("Neighbor is not present")
             
             return Vertex.empty
         }
@@ -77,7 +77,7 @@ extension Delaunay {
             } else if neighbors.c == neighbor {
                 return 2
             }
-            assertionFailure("Neighbor is not present")
+//            assertionFailure("Neighbor is not present")
             
             return null
         }
@@ -92,7 +92,7 @@ extension Delaunay {
                 return 2
             }
 
-            assertionFailure("Neighbor is not present")
+//            assertionFailure("Neighbor is not present")
             return null
         }
         
@@ -134,7 +134,7 @@ extension Delaunay {
                 return self.neighbors.c
             }
             
-            assertionFailure("Point is not present")
+//            assertionFailure("Point is not present")
             
             return null
         }

@@ -10,6 +10,15 @@
       }
     },
     {
+      "identity" : "svgpath",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nicklockwood/SVGPath",
+      "state" : {
+        "revision" : "47c65cae8009646157890ded09621a7027dac68c",
+        "version" : "1.1.4"
+      }
+    },
+    {
       "identity" : "swiftycoretext",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/yukiny0811/SwiftyCoreText",
