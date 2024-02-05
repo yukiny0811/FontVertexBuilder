@@ -191,7 +191,7 @@ public extension GlyphUtil {
         
         private static let TRIANGULATOR = Triangulator(precision: 0.0001)
         
-        public static func triangulate(_ calculatedPaths: [LetterPath], isClockwiseFont: Bool) -> [TriangulatedLetterPath] {
+        private static func triangulate(_ calculatedPaths: [LetterPath], isClockwiseFont: Bool) -> [TriangulatedLetterPath] {
             var triangulatedPaths: [TriangulatedLetterPath] = []
             for letter in calculatedPaths {
                 triangulatedPaths.append(TriangulatedLetterPath(glyphLines: [], offset: f3(letter.offset.x, letter.offset.y, 0)))
@@ -242,7 +242,15 @@ public extension GlyphUtil {
             return triangulatedPaths
         }
         
-        public static func triangulateWithoutLetterOffset(_ calculatedPaths: [LetterPath], isClockwiseFont: Bool) -> (paths: [TriangulatedLetterPath], letterOffsets: [f3]) {
+        public static func triangulateWithoutLetterOffset(_ calculatedPaths: [LetterPath]) -> (paths: [TriangulatedLetterPath], letterOffsets: [f3]) {
+            var result = triangulateWithoutLetterOffset(calculatedPaths, isClockwiseFont: true)
+            if result.paths.reduce(0, { r, elem in r + elem.glyphLines.count }) == 0 {
+                result = triangulateWithoutLetterOffset(calculatedPaths, isClockwiseFont: false)
+            }
+            return result
+        }
+        
+        private static func triangulateWithoutLetterOffset(_ calculatedPaths: [LetterPath], isClockwiseFont: Bool) -> (paths: [TriangulatedLetterPath], letterOffsets: [f3]) {
             var triangulatedPaths: [TriangulatedLetterPath] = []
             var letterOffsets: [f3] = []
             for letter in calculatedPaths {
