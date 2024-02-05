@@ -6,9 +6,9 @@ import PackageDescription
 let package = Package(
     name: "FontVertexBuilder",
     platforms: [
-        .iOS(.v12),
+        .iOS(.v13),
         .macOS(.v10_15),
-        .tvOS(.v12),
+        .tvOS(.v13),
         .visionOS(.v1)
     ],
     products: [
