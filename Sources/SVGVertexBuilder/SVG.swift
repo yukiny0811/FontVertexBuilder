@@ -11,7 +11,7 @@ import iShapeTriangulation
 import SVGPath
 import CoreGraphics
 
-public class SVG: NSObject, XMLParserDelegate {
+open class SVG: NSObject, XMLParserDelegate {
     
     var cgPaths: [CGPath] = []
     var parsingFinished = false
