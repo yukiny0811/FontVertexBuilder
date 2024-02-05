@@ -6,20 +6,22 @@ import PackageDescription
 let package = Package(
     name: "FontVertexBuilder",
     platforms: [
-        .iOS(.v12),
-        .macOS(.v10_13),
+        .iOS(.v13),
+        .macOS(.v10_15),
     ],
     products: [
         .library(
             name: "FontVertexBuilder",
             targets: [
-                "FontVertexBuilder"
+                "FontVertexBuilder",
+                "SVGVertexBuilder"
             ]
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/yukiny0811/SwiftyCoreText", from: "1.0.0"),
-        .package(url: "https://github.com/yukiny0811/SimpleSimdSwift", from: "1.0.1"),
+        .package(url: "https://github.com/yukiny0811/SwiftyCoreText", exact: "1.0.0"),
+        .package(url: "https://github.com/yukiny0811/SimpleSimdSwift", exact: "1.0.1"),
+        .package(url: "https://github.com/nicklockwood/SVGPath", exact: "1.1.4"),
     ],
     targets: [
         .target(
@@ -28,6 +30,14 @@ let package = Package(
                 "iShapeTriangulation",
                 "SwiftyCoreText",
                 "SimpleSimdSwift"
+            ]
+        ),
+        .target(
+            name: "SVGVertexBuilder",
+            dependencies: [
+                "iShapeTriangulation",
+                "SimpleSimdSwift",
+                "SVGPath"
             ]
         ),
         .target(
@@ -46,7 +56,8 @@ let package = Package(
         .testTarget(
             name: "FontVertexBuilderTests",
             dependencies: [
-                "FontVertexBuilder"
+                "FontVertexBuilder",
+                "SVGVertexBuilder"
             ]
         ),
     ]
