@@ -48,7 +48,7 @@ public extension SVGUtil {
             depth: Int,
             line: inout [f2]
         ) {
-            if Self.DEPTH > 8 { return }
+            if depth > Self.DEPTH { return }
             let startMiddleAngle: Float = acos(simd_dot(aVel, bVel))
             let middleEndAngle: Float = acos(simd_dot(bVel, cVel))
             if startMiddleAngle + middleEndAngle > angleLimit {
