@@ -15,13 +15,15 @@ open class SVG: NSObject, XMLParserDelegate {
     
     var cgPaths: [CGPath] = []
     var parsingFinished = false
-    
+    var maxDepth: Int
+
     public var triangulatedPaths: [SVGGlyphLine] = []
     
-    public init? (url: URL) async {
+    public init? (url: URL, maxDepth: Int = 8) async {
         guard let parser = XMLParser(contentsOf: url) else {
             return nil
         }
+        self.maxDepth = maxDepth
         super.init()
         parser.delegate = self
         parser.parse()
@@ -52,7 +54,7 @@ open class SVG: NSObject, XMLParserDelegate {
     public func parserDidEndDocument(_ parser: XMLParser) {
         var parsed: [SVGPathObject] = []
         for cgPath in cgPaths {
-            let glyphLines = SVGUtil.MainFunctions.getGlyphLines(cgPath)
+            let glyphLines = SVGUtil.MainFunctions.getGlyphLines(cgPath, maxDepth: maxDepth)
             parsed.append(.init(glyphs: glyphLines, offset: .zero))
         }
         

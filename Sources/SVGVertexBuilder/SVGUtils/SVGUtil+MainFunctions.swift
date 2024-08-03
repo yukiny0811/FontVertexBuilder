@@ -35,7 +35,6 @@ import SimpleSimdSwift
 
 public extension SVGUtil {
     enum MainFunctions {
-        private static let DEPTH: Int = 8
         static func adaptiveQubicBezierCurve2(
             a: f2,
             b: f2,
@@ -46,9 +45,10 @@ public extension SVGUtil {
             cVel: f2,
             angleLimit: Float,
             depth: Int,
-            line: inout [f2]
+            line: inout [f2],
+            maxDepth: Int
         ) {
-            if depth > Self.DEPTH { return }
+            if depth > maxDepth { return }
             let startMiddleAngle: Float = acos(simd_dot(aVel, bVel))
             let middleEndAngle: Float = acos(simd_dot(bVel, cVel))
             if startMiddleAngle + middleEndAngle > angleLimit {
@@ -59,10 +59,10 @@ public extension SVGUtil {
                 let bcd = (bc + cd) * 0.5
                 let abcd = (abc + bcd) * 0.5
                 let sVel = simd_normalize(HelperFunctions.cubicBezierVelocity2(a, ab, abc, abcd, 0.5))
-                Self.adaptiveQubicBezierCurve2(a: a, b: ab, c: abc, d: abcd, aVel: aVel, bVel: sVel, cVel: bVel, angleLimit: angleLimit, depth: depth+1, line: &line)
+                Self.adaptiveQubicBezierCurve2(a: a, b: ab, c: abc, d: abcd, aVel: aVel, bVel: sVel, cVel: bVel, angleLimit: angleLimit, depth: depth+1, line: &line, maxDepth: maxDepth)
                 line.append(abcd)
                 let eVel = simd_normalize(HelperFunctions.cubicBezierVelocity2(abcd, bcd, cd, d, 0.5))
-                Self.adaptiveQubicBezierCurve2(a: abcd, b: bcd, c: cd, d: d, aVel: bVel, bVel: eVel, cVel: cVel, angleLimit: angleLimit, depth: depth+1, line: &line)
+                Self.adaptiveQubicBezierCurve2(a: abcd, b: bcd, c: cd, d: d, aVel: bVel, bVel: eVel, cVel: cVel, angleLimit: angleLimit, depth: depth+1, line: &line, maxDepth: maxDepth)
             }
         }
         static func adaptiveQuadraticBezierCurve2(
@@ -90,7 +90,7 @@ public extension SVGUtil {
                 adaptiveQuadraticBezierCurve2(a: abc, b: bc, c: c, aVel: bVel, bVel: eVel, cVel: cVel, angleLimit: angleLimit, depth: depth+1, line: &line)
             }
         }
-        public static func getGlyphLines(_ glyphPath: CGPath, _ angleLimit: Float = 7.5 * Float.pi / 180.0, _ distanceLimit: Float = 10000) -> [SVGGlyphLine] {
+        public static func getGlyphLines(_ glyphPath: CGPath, _ angleLimit: Float = 7.5 * Float.pi / 180.0, _ distanceLimit: Float = 10000, maxDepth: Int) -> [SVGGlyphLine] {
             
             var myPath = SVGGlyphLine()
             var myGlyphPaths = [SVGGlyphLine]()
@@ -149,7 +149,7 @@ public extension SVGUtil {
                     let cVel = simd_normalize(SVGUtil.HelperFunctions.cubicBezierVelocity2(myA, myB, myC, myD, 1.0))
                     var data: [simd_float2] = []
                     data.append(myA)
-                    SVGUtil.MainFunctions.adaptiveQubicBezierCurve2(a: myA, b: myB, c: myC, d: myD, aVel: aVel, bVel: bVel, cVel: cVel, angleLimit: angleLimit, depth: 0, line: &data)
+                    SVGUtil.MainFunctions.adaptiveQubicBezierCurve2(a: myA, b: myB, c: myC, d: myD, aVel: aVel, bVel: bVel, cVel: cVel, angleLimit: angleLimit, depth: 0, line: &data, maxDepth: maxDepth)
                     data.append(myD)
                     data.removeFirst()
                     myPath += data

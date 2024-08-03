@@ -161,7 +161,8 @@ open class PathText {
         verticalAlignment: VerticalAlignment = .center,
         kern: Float = 0.0,
         lineSpacing: Float = 0.0,
-        isClockwiseFont: Bool = false
+        isClockwiseFont: Bool = false,
+        maxDepth: Int = 8
     ) {
         self.text = text
         textBounds = bounds
@@ -172,7 +173,7 @@ open class PathText {
         self.lineSpacing = lineSpacing
         self.isClockwiseFont = isClockwiseFont
         ctFont = SwiftyCTFont(name: fontName, size: CGFloat(fontSize), matrix: nil, options: nil)
-        setupData()
+        setupData(maxDepth: maxDepth)
     }
     
     public init(
@@ -184,7 +185,8 @@ open class PathText {
         textAlignment: CTTextAlignment = .natural,
         verticalAlignment: VerticalAlignment = .center,
         kern: Float = 0.0,
-        lineSpacing: Float = 0.0
+        lineSpacing: Float = 0.0,
+        maxDepth: Int = 8
     ) {
         self.text = text
         textBounds = bounds
@@ -194,10 +196,10 @@ open class PathText {
         self.kern = kern
         self.lineSpacing = lineSpacing
         ctFont = SwiftyCTFont(name: fontName, size: CGFloat(fontSize), matrix: nil, options: nil)
-        setupData()
+        setupData(maxDepth: maxDepth)
     }
 
-    func setupData() {
+    func setupData(maxDepth: Int) {
         var charOffset = 0
         for (lineIndex, line) in lines.enumerated() {
             let origin = origins[lineIndex]
@@ -211,7 +213,7 @@ open class PathText {
                 for glyphIndex in 0 ..< glyphCount {
                     let glyph = glyphs[glyphIndex]
                     let glyphPosition = glyphPositions[glyphIndex]
-                    addGlyphGeometryData(glyph, glyphPosition, origin)
+                    addGlyphGeometryData(glyph, glyphPosition, origin, maxDepth: maxDepth)
                     charOffset += 1
                 }
                 glyphPositions.deallocate()
@@ -219,10 +221,10 @@ open class PathText {
             }
         }
     }
-    func addGlyphGeometryData(_ glyph: CGGlyph, _ glyphPosition: CGPoint, _ origin: CGPoint) {
+    func addGlyphGeometryData(_ glyph: CGGlyph, _ glyphPosition: CGPoint, _ origin: CGPoint, maxDepth: Int) {
         guard let framePivot = framePivot, let verticalOffset = verticalOffset else { return }
         if let glyphPath = ctFont.createPathForGlyph(glyph: glyph, matrix: nil) {
-            let glyphPaths = GlyphUtil.MainFunctions.getGlyphLines(glyphPath, angleLimit, fontSize*10)
+            let glyphPaths = GlyphUtil.MainFunctions.getGlyphLines(glyphPath, angleLimit, fontSize*10, maxDepth: maxDepth)
             let glyphOffset = f2(Float(glyphPosition.x + origin.x - framePivot.x), Float(glyphPosition.y + origin.y - framePivot.y - verticalOffset))
             calculatedPaths.append(LetterPath(glyphs: glyphPaths, offset: glyphOffset))
         }
