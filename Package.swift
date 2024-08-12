@@ -21,7 +21,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/yukiny0811/SwiftyCoreText", exact: "1.0.0"),
         .package(url: "https://github.com/yukiny0811/SimpleSimdSwift", exact: "1.0.1"),
-        .package(url: "https://github.com/nicklockwood/SVGPath", exact: "1.1.4"),
+        .package(url: "https://github.com/yukiny0811/SVGPath", branch: "main"),
     ],
     targets: [
         .target(

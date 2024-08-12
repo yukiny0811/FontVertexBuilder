@@ -12,10 +12,10 @@
     {
       "identity" : "svgpath",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/nicklockwood/SVGPath",
+      "location" : "https://github.com/yukiny0811/SVGPath",
       "state" : {
-        "revision" : "47c65cae8009646157890ded09621a7027dac68c",
-        "version" : "1.1.4"
+        "branch" : "main",
+        "revision" : "e738fb6400d4e4d14e82c41c9d30c3908285eae9"
       }
     },
     {
