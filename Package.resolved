@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/yukiny0811/SVGPath",
       "state" : {
-        "branch" : "main",
-        "revision" : "e738fb6400d4e4d14e82c41c9d30c3908285eae9"
+        "revision" : "e738fb6400d4e4d14e82c41c9d30c3908285eae9",
+        "version" : "1.0.0"
       }
     },
     {
