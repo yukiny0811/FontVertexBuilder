@@ -1,4 +1,4 @@
-// swift-tools-version: 5.6
+// swift-tools-version: 5.9
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -8,24 +8,27 @@ let package = Package(
     platforms: [
         .iOS(.v13),
         .macOS(.v10_15),
+        .tvOS(.v13),
+        .visionOS(.v1)
     ],
     products: [
         .library(
             name: "FontVertexBuilder",
             targets: [
                 "FontVertexBuilder",
-                "SVGVertexBuilder"
+                "SVGVertexBuilder",
+                "VectorTriangulator"
             ]
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/yukiny0811/SwiftyCoreText", exact: "1.0.0"),
-        .package(url: "https://github.com/yukiny0811/SimpleSimdSwift", exact: "1.0.1"),
-        .package(url: "https://github.com/yukiny0811/SVGPath", exact: "1.0.0"),
+        .package(url: "https://github.com/yukiny0811/SwiftyCoreText", from: "1.0.0"),
+        .package(url: "https://github.com/yukiny0811/SimpleSimdSwift", from: "1.0.1"),
+        .package(url: "https://github.com/yukiny0811/SVGPath", from: "1.0.0"),
     ],
     targets: [
         .target(
-            name: "FontVertexBuilder",
+            name: "VectorTriangulator",
             dependencies: [
                 "iShapeTriangulation",
                 "SwiftyCoreText",
@@ -33,11 +36,19 @@ let package = Package(
             ]
         ),
         .target(
+            name: "FontVertexBuilder",
+            dependencies: [
+                "iShapeTriangulation",
+                "SwiftyCoreText",
+                "SimpleSimdSwift",
+            ]
+        ),
+        .target(
             name: "SVGVertexBuilder",
             dependencies: [
                 "iShapeTriangulation",
                 "SimpleSimdSwift",
-                "SVGPath"
+                "SVGPath",
             ]
         ),
         .target(
