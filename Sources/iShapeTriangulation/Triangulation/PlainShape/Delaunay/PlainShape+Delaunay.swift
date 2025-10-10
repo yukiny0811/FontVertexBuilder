@@ -68,9 +68,11 @@ public extension PlainShape {
             }
             
             self.edges.append(Edge(a: b.index, b: c.index, neighbor: triangle.index)) // bc is always slice
-            
-            self.triangles[triangle.index] = triangle
-            
+
+            if self.triangles.count > triangle.index {
+                self.triangles[triangle.index] = triangle
+            }
+
             self.counter += 1
         }
         
