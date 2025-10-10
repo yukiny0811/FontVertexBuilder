@@ -196,9 +196,17 @@ public enum VectorTriangulator {
             public var holes: [Hole] = []
         }
 
-        public static let TRIANGULATOR = Triangulator(precision: 0.0000001)
-
-        public static func triangulate(_ calculatedPaths: [[[simd_double2]]], isClockwiseFont: Bool) -> [[[simd_double2]]] {
+        /// Creates a new triangulator with the specified precision
+        /// - Parameter precision: The minimum required precision. It's a minimum linear distance after which points will be recognized as the same.
+        /// For example with precision = 0.1 points (1; 1), (1; 0.05) will be equal
+        /// Keep in mind that your maximum point length depend on this value by the formula: precision * 10^9
+        /// For example:
+        /// with precision = 0.1 your maximum allowed point is (100kk, 100kk)
+        /// with precision = 0.0001 your maximum allowed point is (100k, 100k)
+        /// with precision = 0.0000001 your maximum allowed point is (100, 100)
+        /// If your broke this rule, the calculation will be undefinied
+        public static func triangulate(_ calculatedPaths: [[[simd_double2]]], isClockwiseFont: Bool, precision: Double) -> [[[simd_double2]]] {
+            let TRIANGULATOR = Triangulator(precision: precision)
             var triangulatedPaths: [[[simd_double2]]] = []
             for letter in calculatedPaths {
                 triangulatedPaths.append([])
@@ -241,23 +249,58 @@ public enum VectorTriangulator {
             return triangulatedPaths
         }
 
-        public static func triangulate(_ calculatedPaths: [[[simd_double2]]]) -> [[[simd_double2]]] {
-            var triangulatedPaths = triangulate(calculatedPaths, isClockwiseFont: true)
+        /// Creates a new triangulator with the specified precision
+        /// - Parameter precision: The minimum required precision. It's a minimum linear distance after which points will be recognized as the same.
+        /// For example with precision = 0.1 points (1; 1), (1; 0.05) will be equal
+        /// Keep in mind that your maximum point length depend on this value by the formula: precision * 10^9
+        /// For example:
+        /// with precision = 0.1 your maximum allowed point is (100kk, 100kk)
+        /// with precision = 0.0001 your maximum allowed point is (100k, 100k)
+        /// with precision = 0.0000001 your maximum allowed point is (100, 100)
+        /// If your broke this rule, the calculation will be undefinied
+        public static func triangulate(_ calculatedPaths: [[[simd_double2]]], precision: Double) -> [[[simd_double2]]] {
+            var triangulatedPaths = triangulate(calculatedPaths, isClockwiseFont: true, precision: precision)
             if triangulatedPaths.reduce(0, { r, elem in r + elem.count }) == 0 {
-                triangulatedPaths = triangulate(calculatedPaths, isClockwiseFont: false)
+                triangulatedPaths = triangulate(calculatedPaths, isClockwiseFont: false, precision: precision)
             }
             return triangulatedPaths
         }
 
-        public static func triangulateWithoutLetterOffset(_ calculatedPaths: [[[simd_double2]]]) -> (paths: [[[simd_double2]]], letterOffsets: [simd_double3]) {
-            var result = triangulateWithoutLetterOffset(calculatedPaths, isClockwiseFont: true)
+        /// Creates a new triangulator with the specified precision
+        /// - Parameter precision: The minimum required precision. It's a minimum linear distance after which points will be recognized as the same.
+        /// For example with precision = 0.1 points (1; 1), (1; 0.05) will be equal
+        /// Keep in mind that your maximum point length depend on this value by the formula: precision * 10^9
+        /// For example:
+        /// with precision = 0.1 your maximum allowed point is (100kk, 100kk)
+        /// with precision = 0.0001 your maximum allowed point is (100k, 100k)
+        /// with precision = 0.0000001 your maximum allowed point is (100, 100)
+        /// If your broke this rule, the calculation will be undefinied
+        public static func triangulateWithoutLetterOffset(_ calculatedPaths: [[[simd_double2]]], precision: Double) -> (paths: [[[simd_double2]]], letterOffsets: [simd_double3]) {
+            var result = triangulateWithoutLetterOffset(calculatedPaths, isClockwiseFont: true, precision: precision)
             if result.paths.reduce(0, { r, elem in r + elem.count }) == 0 {
-                result = triangulateWithoutLetterOffset(calculatedPaths, isClockwiseFont: false)
+                result = triangulateWithoutLetterOffset(calculatedPaths, isClockwiseFont: false, precision: precision)
             }
             return result
         }
 
-        public static func triangulateWithoutLetterOffset(_ calculatedPaths: [[[simd_double2]]], isClockwiseFont: Bool) -> (paths: [[[simd_double2]]], letterOffsets: [simd_double3]) {
+        /// Creates a new triangulator with the specified precision
+        /// - Parameter precision: The minimum required precision. It's a minimum linear distance after which points will be recognized as the same.
+        /// For example with precision = 0.1 points (1; 1), (1; 0.05) will be equal
+        /// Keep in mind that your maximum point length depend on this value by the formula: precision * 10^9
+        /// For example:
+        /// with precision = 0.1 your maximum allowed point is (100kk, 100kk)
+        /// with precision = 0.0001 your maximum allowed point is (100k, 100k)
+        /// with precision = 0.0000001 your maximum allowed point is (100, 100)
+        /// If your broke this rule, the calculation will be undefinied
+        public static func triangulateWithoutLetterOffset(
+            _ calculatedPaths: [[[simd_double2]]],
+            isClockwiseFont: Bool,
+            precision: Double
+        ) -> (
+            paths: [[[simd_double2]]],
+            letterOffsets: [simd_double3]
+        ) {
+            let TRIANGULATOR = Triangulator(precision: precision)
             var triangulatedPaths: [[[simd_double2]]] = []
             var letterOffsets: [simd_double3] = []
             for letter in calculatedPaths {
@@ -303,8 +346,17 @@ public enum VectorTriangulator {
         }
     }
 
-    public static func triangulate(_ pathsWithHole: [[simd_double2]]) -> [simd_double2] {
-        let result = MainFunctions.triangulate([pathsWithHole])
+    /// Creates a new triangulator with the specified precision
+    /// - Parameter precision: The minimum required precision. It's a minimum linear distance after which points will be recognized as the same.
+    /// For example with precision = 0.1 points (1; 1), (1; 0.05) will be equal
+    /// Keep in mind that your maximum point length depend on this value by the formula: precision * 10^9
+    /// For example:
+    /// with precision = 0.1 your maximum allowed point is (100kk, 100kk)
+    /// with precision = 0.0001 your maximum allowed point is (100k, 100k)
+    /// with precision = 0.0000001 your maximum allowed point is (100, 100)
+    /// If your broke this rule, the calculation will be undefinied
+    public static func triangulate(_ pathsWithHole: [[simd_double2]], precision: Double) -> [simd_double2] {
+        let result = MainFunctions.triangulate([pathsWithHole], precision: precision)
         return result.reduce([], +).reduce([], +)
     }
 }
