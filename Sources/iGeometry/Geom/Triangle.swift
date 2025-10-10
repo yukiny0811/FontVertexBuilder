@@ -10,17 +10,17 @@ import SimpleSimdSwift
 
 public struct Triangle {
     
-    public let a: f2
-    public let b: f2
-    public let c: f2
-    
-    public init(a: f2, b: f2, c: f2) {
+    public let a: simd_double2
+    public let b: simd_double2
+    public let c: simd_double2
+
+    public init(a: simd_double2, b: simd_double2, c: simd_double2) {
         self.a = a
         self.b = b
         self.c = c
     }
  
-    public var area: Float {
+    public var area: Double {
         0.5 * (a.x * (c.y - b.y) + b.x * (a.y - c.y) + c.x * (b.y - a.y))
     }
     
@@ -35,18 +35,18 @@ public struct Triangle {
     }
     
     
-    public static func circumscribedСircle(a: f2, b: f2, c: f2) -> Circle {
+    public static func circumscribedСircle(a: simd_double2, b: simd_double2, c: simd_double2) -> Circle {
         let d = 2 * (a.x * (b.y - c.y) + b.x * (c.y - a.y) + c.x * (a.y - b.y))
         let x = ((a.x * a.x + a.y * a.y) * (b.y - c.y) + (b.x * b.x + b.y * b.y) * (c.y - a.y) + (c.x * c.x + c.y * c.y) * (a.y - b.y)) / d
         let y = ((a.x * a.x + a.y * a.y) * (c.x - b.x) + (b.x * b.x + b.y * b.y) * (a.x - c.x) + (c.x * c.x + c.y * c.y) * (b.x - a.x)) / d
         
         let r = ((a.x - x) * (a.x - x) + (a.y - y) * (a.y - y)).squareRoot()
         
-        return Circle(center: f2(x: x, y: y), radius: r)
+        return Circle(center: simd_double2(x: x, y: y), radius: r)
     }
     
     
-    public static func inscribedСircle(a: f2, b: f2, c: f2) -> Circle {
+    public static func inscribedСircle(a: simd_double2, b: simd_double2, c: simd_double2) -> Circle {
         let ABx = a.x - b.x
         let ABy = a.y - b.y
         let AB = (ABx * ABx + ABy * ABy).squareRoot()
@@ -66,6 +66,6 @@ public struct Triangle {
         
         let r = ((-BC + AC + AB) * (BC - AC + AB) * (BC + AC - AB) / (4 * p)).squareRoot()
         
-        return Circle(center: f2(x: Ox, y: Oy), radius: r)
+        return Circle(center: simd_double2(x: Ox, y: Oy), radius: r)
     }
 }

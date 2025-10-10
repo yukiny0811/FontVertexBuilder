@@ -75,8 +75,8 @@ extension Simplificator {
         let m0 = dx0 * dx0 + dy0 * dy0
         let m1 = dx1 * dx1 + dy1 * dy1
         
-        let ab = (Float(m0) * Float(m1)).squareRoot()
-        let axb = Float(dx0 * dx1 + dy0 * dy1)
+        let ab = (Double(m0) * Double(m1)).squareRoot()
+        let axb = Double(dx0 * dx1 + dy0 * dy1)
         let aCos = abs(axb / ab)
         
         if aCos > maxCos {

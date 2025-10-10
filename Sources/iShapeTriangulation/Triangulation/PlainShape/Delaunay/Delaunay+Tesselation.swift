@@ -12,15 +12,15 @@ extension Delaunay {
 
     private struct Validator {
 
-        static let sqrMergeCos: Float = {
-            let mergeCos = cos(0.8 * Float.pi)
+        static let sqrMergeCos: Double = {
+            let mergeCos = cos(0.8 * Double.pi)
             return mergeCos * mergeCos
         }()
         
-        private let maxArea: Float
+        private let maxArea: Double
         private let iGeom: IntGeom
         
-        init(iGeom: IntGeom, maxArea: Float) {
+        init(iGeom: IntGeom, maxArea: Double) {
             self.iGeom = iGeom
             if maxArea > 0 {
                 self.maxArea = 2 * maxArea
@@ -29,7 +29,7 @@ extension Delaunay {
             }
         }
         
-        static func sqrCos(a: IntPoint, b: IntPoint, c: IntPoint) -> Float {
+        static func sqrCos(a: IntPoint, b: IntPoint, c: IntPoint) -> Double {
             let ab = a.sqrDistance(point: b)
             let ca = c.sqrDistance(point: a)
             let bc = b.sqrDistance(point: c)
@@ -38,9 +38,9 @@ extension Delaunay {
                 return 0
             }
             
-            let aa = Float(bc)
-            let bb = Float(ca)
-            let cc = Float(ab)
+            let aa = Double(bc)
+            let bb = Double(ca)
+            let cc = Double(ab)
 
             let l = aa + bb - cc
             return l * l / (4 * aa * bb)

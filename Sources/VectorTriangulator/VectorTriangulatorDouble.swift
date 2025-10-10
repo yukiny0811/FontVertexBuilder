@@ -1,31 +1,10 @@
 //
 //  File.swift
+//  FontVertexBuilder
 //
+//  Created by Yuki Kuwashima on 2025/10/10.
 //
-//  Created by Yuki Kuwashima on 2023/06/28.
-//
-//Original Objective-c++ Code from https://github.com/Hi-Rez/Satin (Modified and translated to Swift by Yuki Kuwashima)
-//MIT License
-//
-//Copyright (c) 2023 Hi-Rez
-//
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
-//
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
-//
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
+
 
 import Foundation
 import SimpleSimdSwift
@@ -37,7 +16,7 @@ import iShapeTriangulation
 
 public enum VectorTriangulator {
     public enum HelperFunctions {
-        public static func cubicBezierVelocity2(_ a: f2, _ b: f2, _ c: f2, _ d: f2, _ t: Float) -> f2 {
+        public static func cubicBezierVelocity2(_ a: simd_double2, _ b: simd_double2, _ c: simd_double2, _ d: simd_double2, _ t: Double) -> simd_double2 {
             let oneMinusT = 1.0 - t
             let oneMinusT2 = oneMinusT * oneMinusT
             let temp1 = 3.0 * oneMinusT2 * (b - a)
@@ -45,14 +24,14 @@ public enum VectorTriangulator {
             let temp3 = 3.0 * t * t * (d - c)
             return temp1 + temp2 + temp3
         }
-        public static func quadraticBezierVelocity2(_ a: f2, _ b: f2, _ c: f2, _ t: Float) -> f2 {
-            let oneMinusT: Float = 1.0 - t
+        public static func quadraticBezierVelocity2(_ a: simd_double2, _ b: simd_double2, _ c: simd_double2, _ t: Double) -> simd_double2 {
+            let oneMinusT: Double = 1.0 - t
             return 2 * oneMinusT * (b-a) + 2 * t * (c-b)
         }
 
         // maybe not working? unused.
-        public static func isVertexStructureClockwise(data: [f2]) -> Bool {
-            var area: Float = 0
+        public static func isVertexStructureClockwise(data: [simd_double2]) -> Bool {
+            var area: Double = 0
             for i in 0..<data.count {
                 let i0 = i
                 let i1 = (i+1) % data.count
@@ -65,21 +44,21 @@ public enum VectorTriangulator {
     }
     public enum MainFunctions {
         public static func adaptiveQubicBezierCurve2(
-            a: f2,
-            b: f2,
-            c: f2,
-            d: f2,
-            aVel: f2,
-            bVel: f2,
-            cVel: f2,
-            angleLimit: Float,
+            a: simd_double2,
+            b: simd_double2,
+            c: simd_double2,
+            d: simd_double2,
+            aVel: simd_double2,
+            bVel: simd_double2,
+            cVel: simd_double2,
+            angleLimit: Double,
             depth: Int,
-            line: inout [f2],
+            line: inout [simd_double2],
             maxDepth: Int
         ) {
             if depth > maxDepth { return }
-            let startMiddleAngle: Float = acos(simd_dot(aVel, bVel))
-            let middleEndAngle: Float = acos(simd_dot(bVel, cVel))
+            let startMiddleAngle: Double = acos(simd_dot(aVel, bVel))
+            let middleEndAngle: Double = acos(simd_dot(bVel, cVel))
             if startMiddleAngle + middleEndAngle > angleLimit {
                 let ab = (a+b) * 0.5
                 let bc = (b+c) * 0.5
@@ -95,19 +74,19 @@ public enum VectorTriangulator {
             }
         }
         public static func adaptiveQuadraticBezierCurve2(
-            a: simd_float2,
-            b: simd_float2,
-            c: simd_float2,
-            aVel: simd_float2,
-            bVel: simd_float2,
-            cVel: simd_float2,
-            angleLimit: Float,
+            a: simd_double2,
+            b: simd_double2,
+            c: simd_double2,
+            aVel: simd_double2,
+            bVel: simd_double2,
+            cVel: simd_double2,
+            angleLimit: Double,
             depth: Int,
-            line: inout [simd_float2]
+            line: inout [simd_double2]
         ) {
             if depth > 8 { return }
-            let startMiddleAngle: Float = acos(simd_dot(aVel, bVel))
-            let middleEndAngle: Float = acos(simd_dot(bVel, cVel))
+            let startMiddleAngle: Double = acos(simd_dot(aVel, bVel))
+            let middleEndAngle: Double = acos(simd_dot(bVel, cVel))
             if startMiddleAngle + middleEndAngle > angleLimit {
                 let ab = (a+b) * 0.5
                 let bc = (b+c) * 0.5
@@ -119,13 +98,13 @@ public enum VectorTriangulator {
                 adaptiveQuadraticBezierCurve2(a: abc, b: bc, c: c, aVel: bVel, bVel: eVel, cVel: cVel, angleLimit: angleLimit, depth: depth+1, line: &line)
             }
         }
-        public static func getGlyphLines(_ glyphPath: CGPath, _ angleLimit: Float, _ distanceLimit: Float, maxDepth: Int) -> [[f2]] {
-            var myPath = [f2]()
-            var myGlyphPaths = [[f2]]()
+        public static func getGlyphLines(_ glyphPath: CGPath, _ angleLimit: Double, _ distanceLimit: Double, maxDepth: Int) -> [[simd_double2]] {
+            var myPath = [simd_double2]()
+            var myGlyphPaths = [[simd_double2]]()
             glyphPath.applyWithBlock { (elementPtr: UnsafePointer<CGPathElement>) in
                 let element = elementPtr.pointee
                 var pointsPtr = element.points
-                let pt = simd_make_float2(Float(pointsPtr.pointee.x), Float(pointsPtr.pointee.y))
+                let pt = simd_double2(pointsPtr.pointee.x, pointsPtr.pointee.y)
 
                 switch element.type {
                 case .moveToPoint:
@@ -133,11 +112,11 @@ public enum VectorTriangulator {
                 case .addLineToPoint:
                     let myA = myPath.last!
                     let length = simd_length(pt - myA)
-                    var data: [simd_float2] = []
+                    var data: [simd_double2] = []
                     if length > distanceLimit {
                         let sections = Int(max(ceil(length / distanceLimit), 2))
-                        let inc = 1.0 / Float(sections - 1)
-                        var t = simd_float2(0.0, 0.0)
+                        let inc = 1.0 / Double(sections - 1)
+                        var t = simd_double2(0.0, 0.0)
                         for _ in 0..<sections {
                             data.append(simd_mix(myA, pt, t))
                             t += inc
@@ -153,11 +132,11 @@ public enum VectorTriangulator {
                     let myB = pt
                     pointsPtr += 1
                     let myA = myPath.last!
-                    let myC = simd_make_float2(Float(pointsPtr.pointee.x), Float(pointsPtr.pointee.y))
+                    let myC = simd_double2(pointsPtr.pointee.x, pointsPtr.pointee.y)
                     let aVel = simd_normalize(HelperFunctions.quadraticBezierVelocity2(myA, myB, myC, 0.0))
                     let bVel = simd_normalize(HelperFunctions.quadraticBezierVelocity2(myA, myB, myC, 0.5))
                     let cVel = simd_normalize(HelperFunctions.quadraticBezierVelocity2(myA, myB, myC, 1.0))
-                    var data: [simd_float2] = []
+                    var data: [simd_double2] = []
                     data.append(myA)
                     MainFunctions.adaptiveQuadraticBezierCurve2(a: myA, b: myB, c: myC, aVel: aVel, bVel: bVel, cVel: cVel, angleLimit: angleLimit, depth: 0, line: &data)
                     data.append(myC)
@@ -167,14 +146,14 @@ public enum VectorTriangulator {
                     let myA = myPath.last!
                     let myB = pt
                     pointsPtr += 1
-                    let myC = simd_make_float2(Float(pointsPtr.pointee.x), Float(pointsPtr.pointee.y))
+                    let myC = simd_double2(pointsPtr.pointee.x, pointsPtr.pointee.y)
                     pointsPtr += 1
-                    let myD = simd_make_float2(Float(pointsPtr.pointee.x), Float(pointsPtr.pointee.y))
+                    let myD = simd_double2(pointsPtr.pointee.x, pointsPtr.pointee.y)
 
                     let aVel = simd_normalize(HelperFunctions.cubicBezierVelocity2(myA, myB, myC, myD, 0.0))
                     let bVel = simd_normalize(HelperFunctions.cubicBezierVelocity2(myA, myB, myC, myD, 0.5))
                     let cVel = simd_normalize(HelperFunctions.cubicBezierVelocity2(myA, myB, myC, myD, 1.0))
-                    var data: [simd_float2] = []
+                    var data: [simd_double2] = []
                     data.append(myA)
                     MainFunctions.adaptiveQubicBezierCurve2(a: myA, b: myB, c: myC, d: myD, aVel: aVel, bVel: bVel, cVel: cVel, angleLimit: angleLimit, depth: 0, line: &data, maxDepth: maxDepth)
                     data.append(myD)
@@ -186,11 +165,11 @@ public enum VectorTriangulator {
                     }
                     let myA = myPath.last!
                     let length = simd_length(pt - myA)
-                    var data: [simd_float2] = []
+                    var data: [simd_double2] = []
                     if length > distanceLimit {
                         let sections = Int(max(ceil(length / distanceLimit), 2))
-                        let inc = 1.0 / Float(sections - 1)
-                        var t = simd_float2(0.0, 0.0)
+                        let inc = 1.0 / Double(sections - 1)
+                        var t = simd_double2(0.0, 0.0)
                         for _ in 0..<sections {
                             data.append(simd_mix(myA, pt, t))
                             t += inc
@@ -211,16 +190,16 @@ public enum VectorTriangulator {
             }
             return myGlyphPaths
         }
-        public typealias Hole = [f2]
+        public typealias Hole = [simd_double2]
         public class TriangulateHelperData {
-            public var path: [f2] = []
+            public var path: [simd_double2] = []
             public var holes: [Hole] = []
         }
 
-        public static let TRIANGULATOR = Triangulator(precision: 0.0001)
+        public static let TRIANGULATOR = Triangulator(precision: 0.0000001)
 
-        public static func triangulate(_ calculatedPaths: [[[f2]]], isClockwiseFont: Bool) -> [[[f2]]] {
-            var triangulatedPaths: [[[f2]]] = []
+        public static func triangulate(_ calculatedPaths: [[[simd_double2]]], isClockwiseFont: Bool) -> [[[simd_double2]]] {
+            var triangulatedPaths: [[[simd_double2]]] = []
             for letter in calculatedPaths {
                 triangulatedPaths.append([])
                 var tempHelperDatas: [TriangulateHelperData] = []
@@ -241,8 +220,8 @@ public enum VectorTriangulator {
                     }
                 }
                 for helperData in tempHelperDatas {
-                    let allPath: [f2] = helperData.path + helperData.holes.reduce([], +)
-                    var slices: [ArraySlice<f2>] = []
+                    let allPath: [simd_double2] = helperData.path + helperData.holes.reduce([], +)
+                    var slices: [ArraySlice<simd_double2>] = []
                     var currentIndex = helperData.path.count
                     for hole in helperData.holes {
                         slices.append(allPath[currentIndex..<currentIndex+hole.count])
@@ -254,7 +233,7 @@ public enum VectorTriangulator {
                         holes: slices,
                         extraPoints: nil) {
                         triangulatedPaths[triangulatedPaths.count-1].append( triangles.map{
-                            f2(allPath[$0].x, allPath[$0].y)
+                            simd_double2(allPath[$0].x, allPath[$0].y)
                         })
                     }
                 }
@@ -262,7 +241,7 @@ public enum VectorTriangulator {
             return triangulatedPaths
         }
 
-        public static func triangulate(_ calculatedPaths: [[[f2]]]) -> [[[f2]]] {
+        public static func triangulate(_ calculatedPaths: [[[simd_double2]]]) -> [[[simd_double2]]] {
             var triangulatedPaths = triangulate(calculatedPaths, isClockwiseFont: true)
             if triangulatedPaths.reduce(0, { r, elem in r + elem.count }) == 0 {
                 triangulatedPaths = triangulate(calculatedPaths, isClockwiseFont: false)
@@ -270,7 +249,7 @@ public enum VectorTriangulator {
             return triangulatedPaths
         }
 
-        public static func triangulateWithoutLetterOffset(_ calculatedPaths: [[[f2]]]) -> (paths: [[[f2]]], letterOffsets: [f3]) {
+        public static func triangulateWithoutLetterOffset(_ calculatedPaths: [[[simd_double2]]]) -> (paths: [[[simd_double2]]], letterOffsets: [simd_double3]) {
             var result = triangulateWithoutLetterOffset(calculatedPaths, isClockwiseFont: true)
             if result.paths.reduce(0, { r, elem in r + elem.count }) == 0 {
                 result = triangulateWithoutLetterOffset(calculatedPaths, isClockwiseFont: false)
@@ -278,9 +257,9 @@ public enum VectorTriangulator {
             return result
         }
 
-        public static func triangulateWithoutLetterOffset(_ calculatedPaths: [[[f2]]], isClockwiseFont: Bool) -> (paths: [[[f2]]], letterOffsets: [f3]) {
-            var triangulatedPaths: [[[f2]]] = []
-            var letterOffsets: [f3] = []
+        public static func triangulateWithoutLetterOffset(_ calculatedPaths: [[[simd_double2]]], isClockwiseFont: Bool) -> (paths: [[[simd_double2]]], letterOffsets: [simd_double3]) {
+            var triangulatedPaths: [[[simd_double2]]] = []
+            var letterOffsets: [simd_double3] = []
             for letter in calculatedPaths {
                 triangulatedPaths.append([])
                 var tempHelperDatas: [TriangulateHelperData] = []
@@ -301,8 +280,8 @@ public enum VectorTriangulator {
                     }
                 }
                 for helperData in tempHelperDatas {
-                    let allPath: [f2] = helperData.path + helperData.holes.reduce([], +)
-                    var slices: [ArraySlice<f2>] = []
+                    let allPath: [simd_double2] = helperData.path + helperData.holes.reduce([], +)
+                    var slices: [ArraySlice<simd_double2>] = []
                     var currentIndex = helperData.path.count
                     for hole in helperData.holes {
                         slices.append(allPath[currentIndex..<currentIndex+hole.count])
@@ -314,9 +293,9 @@ public enum VectorTriangulator {
                         holes: slices,
                         extraPoints: nil) {
                         triangulatedPaths[triangulatedPaths.count-1].append( triangles.map{
-                            f2(allPath[$0].x, allPath[$0].y)
+                            simd_double2(allPath[$0].x, allPath[$0].y)
                         })
-                        letterOffsets.append(f3.zero)
+                        letterOffsets.append(simd_double3.zero)
                     }
                 }
             }
@@ -324,9 +303,8 @@ public enum VectorTriangulator {
         }
     }
 
-    public static func triangulate(_ pathsWithHole: [[f2]]) -> [f2] {
+    public static func triangulate(_ pathsWithHole: [[simd_double2]]) -> [simd_double2] {
         let result = MainFunctions.triangulate([pathsWithHole])
         return result.reduce([], +).reduce([], +)
     }
 }
-

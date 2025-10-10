@@ -51,28 +51,28 @@ open class PathText {
     var verticalAlignment: VerticalAlignment = .center
     var textAlignment: CTTextAlignment = .natural
     var text = ""
-    var pivot = f2(0.0, 0.0)
+    var pivot = simd_double2(0.0, 0.0)
     var textBounds = CGSize(width: -1, height: -1)
-    var kern: Float = 0.0
-    var lineSpacing: Float = 0.0
-    var fontSize: Float = 1
-    var lineHeight: Float { ascent + descent + leading }
-    var ascent: Float { Float(ctFont.getAscent()) }
-    var descent: Float { Float(ctFont.getDescent()) }
-    var leading: Float { Float(ctFont.getLeading()) }
-    var unitsPerEm: Float { Float(ctFont.getUnitsPerEm()) }
-    var glyphCount: Float { Float(ctFont.getGlyphCount()) }
-    var underlinePosition: Float { Float(ctFont.getUnderlinePosition()) }
-    var underlineThickness: Float { Float(ctFont.getUnderlineThickness()) }
-    var slantAngle: Float { Float(ctFont.getSlantAngle()) }
-    var capHeight: Float { Float(ctFont.getCapHeight()) }
-    var xHeight: Float { Float(ctFont.getXHeight()) }
+    var kern: Double = 0.0
+    var lineSpacing: Double = 0.0
+    var fontSize: Double = 1
+    var lineHeight: Double { ascent + descent + leading }
+    var ascent: Double { Double(ctFont.getAscent()) }
+    var descent: Double { Double(ctFont.getDescent()) }
+    var leading: Double { Double(ctFont.getLeading()) }
+    var unitsPerEm: Double { Double(ctFont.getUnitsPerEm()) }
+    var glyphCount: Double { Double(ctFont.getGlyphCount()) }
+    var underlinePosition: Double { Double(ctFont.getUnderlinePosition()) }
+    var underlineThickness: Double { Double(ctFont.getUnderlineThickness()) }
+    var slantAngle: Double { Double(ctFont.getSlantAngle()) }
+    var capHeight: Double { Double(ctFont.getCapHeight()) }
+    var xHeight: Double { Double(ctFont.getXHeight()) }
     var ctFont: SwiftyCTFont
     
     @available(*, deprecated, message: "detection of font turn is now auto")
     var isClockwiseFont: Bool = false
     
-    var angleLimit: Float = 7.5 * Float.pi / 180.0
+    var angleLimit: Double = 7.5 * Double.pi / 180.0
     var suggestFrameSize: CGSize? {
         guard let frameSetter = frameSetter else { return nil }
         var bnds = textBounds
@@ -137,11 +137,11 @@ open class PathText {
         // Paragraph Attributes
         let alignment = UnsafeMutablePointer<CTTextAlignment>.allocate(capacity: 1)
         alignment.pointee = textAlignment
-        let lineSpace = UnsafeMutablePointer<Float>.allocate(capacity: 1)
+        let lineSpace = UnsafeMutablePointer<Double>.allocate(capacity: 1)
         lineSpace.pointee = lineSpacing
         let settings = [
             CTParagraphStyleSetting(spec: .alignment, valueSize: MemoryLayout<CTTextAlignment>.size, value: alignment),
-            CTParagraphStyleSetting(spec: .lineSpacingAdjustment, valueSize: MemoryLayout<Float>.size, value: lineSpace),
+            CTParagraphStyleSetting(spec: .lineSpacingAdjustment, valueSize: MemoryLayout<Double>.size, value: lineSpace),
         ]
         let style = CTParagraphStyleCreate(settings, settings.count)
         CFAttributedStringSetAttribute(attributedText, CFRangeMake(0, text.count), kCTParagraphStyleAttributeName, style)
@@ -154,13 +154,13 @@ open class PathText {
     public init(
         text: String,
         fontName: String = "AppleSDGothicNeo-Bold",
-        fontSize: Float,
+        fontSize: Double,
         bounds: CGSize = .zero,
-        pivot: f2 = .zero,
+        pivot: simd_double2 = .zero,
         textAlignment: CTTextAlignment = .natural,
         verticalAlignment: VerticalAlignment = .center,
-        kern: Float = 0.0,
-        lineSpacing: Float = 0.0,
+        kern: Double = 0.0,
+        lineSpacing: Double = 0.0,
         isClockwiseFont: Bool = false,
         maxDepth: Int = 8
     ) {
@@ -179,13 +179,13 @@ open class PathText {
     public init(
         text: String,
         fontName: String = "AppleSDGothicNeo-Bold",
-        fontSize: Float,
+        fontSize: Double,
         bounds: CGSize = .zero,
-        pivot: f2 = .zero,
+        pivot: simd_double2 = .zero,
         textAlignment: CTTextAlignment = .natural,
         verticalAlignment: VerticalAlignment = .center,
-        kern: Float = 0.0,
-        lineSpacing: Float = 0.0,
+        kern: Double = 0.0,
+        lineSpacing: Double = 0.0,
         maxDepth: Int = 8
     ) {
         self.text = text
@@ -225,7 +225,7 @@ open class PathText {
         guard let framePivot = framePivot, let verticalOffset = verticalOffset else { return }
         if let glyphPath = ctFont.createPathForGlyph(glyph: glyph, matrix: nil) {
             let glyphPaths = GlyphUtil.MainFunctions.getGlyphLines(glyphPath, angleLimit, fontSize*10, maxDepth: maxDepth)
-            let glyphOffset = f2(Float(glyphPosition.x + origin.x - framePivot.x), Float(glyphPosition.y + origin.y - framePivot.y - verticalOffset))
+            let glyphOffset = simd_double2(Double(glyphPosition.x + origin.x - framePivot.x), Double(glyphPosition.y + origin.y - framePivot.y - verticalOffset))
             calculatedPaths.append(LetterPath(glyphs: glyphPaths, offset: glyphOffset))
         }
         

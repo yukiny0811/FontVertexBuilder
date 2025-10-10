@@ -32,7 +32,7 @@ import SimpleSimdSwift
 
 public extension GlyphUtil {
     enum HelperFunctions {
-        static func cubicBezierVelocity2(_ a: f2, _ b: f2, _ c: f2, _ d: f2, _ t: Float) -> f2 {
+        static func cubicBezierVelocity2(_ a: simd_double2, _ b: simd_double2, _ c: simd_double2, _ d: simd_double2, _ t: Double) -> simd_double2 {
             let oneMinusT = 1.0 - t
             let oneMinusT2 = oneMinusT * oneMinusT
             let temp1 = 3.0 * oneMinusT2 * (b - a)
@@ -40,14 +40,14 @@ public extension GlyphUtil {
             let temp3 = 3.0 * t * t * (d - c)
             return temp1 + temp2 + temp3
         }
-        static func quadraticBezierVelocity2(_ a: f2, _ b: f2, _ c: f2, _ t: Float) -> f2 {
-            let oneMinusT: Float = 1.0 - t
+        static func quadraticBezierVelocity2(_ a: simd_double2, _ b: simd_double2, _ c: simd_double2, _ t: Double) -> simd_double2 {
+            let oneMinusT: Double = 1.0 - t
             return 2 * oneMinusT * (b-a) + 2 * t * (c-b)
         }
         
         // maybe not working? unused.
-        static func isVertexStructureClockwise(data: [f2]) -> Bool {
-            var area: Float = 0
+        static func isVertexStructureClockwise(data: [simd_double2]) -> Bool {
+            var area: Double = 0
             for i in 0..<data.count {
                 let i0 = i
                 let i1 = (i+1) % data.count

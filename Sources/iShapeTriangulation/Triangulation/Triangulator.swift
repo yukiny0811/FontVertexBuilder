@@ -26,15 +26,15 @@ public struct Triangulator {
     /// with precision = 0.0001 your maximum allowed point is (100k, 100k)
     /// with precision = 0.0000001 your maximum allowed point is (100, 100)
     /// If your broke this rule, the calculation will be undefinied
-    public init(precision: Float = 0.0001) {
-        self.iGeom = IntGeom(scale: Float(1 / precision))
+    public init(precision: Double = 0.0001) {
+        self.iGeom = IntGeom(scale: Double(1 / precision))
     }
     
     /// Makes plain triangulation for polygon
     /// - Parameter points: Linear array of your polygon vertices listed in a clockwise direction.
     /// - Throws: `TriangulationError`
     /// - Returns: Indices of triples which form triangles in clockwise direction
-    public func triangulate(points: [f2]) throws -> [Int] {
+    public func triangulate(points: [simd_double2]) throws -> [Int] {
         let iPoints = iGeom.int(points: points)
         let shape = PlainShape(points: iPoints)
         return try shape.triangulate(extraPoints: nil)
@@ -47,7 +47,7 @@ public struct Triangulator {
     /// - Parameter extraPoints: extra points for triangulation
     /// - Throws: `TriangulationError`
     /// - Returns: Indices of triples which form triangles in clockwise direction
-    public func triangulate(points: [f2], hull: ArraySlice<f2>, holes: [ArraySlice<f2>]?, extraPoints: [f2]?) throws -> [Int] {
+    public func triangulate(points: [simd_double2], hull: ArraySlice<simd_double2>, holes: [ArraySlice<simd_double2>]?, extraPoints: [simd_double2]?) throws -> [Int] {
         let shape = PlainShape(iGeom: iGeom, points: points, hull: hull, holes: holes)
         if let ePoints = extraPoints {
             let iPoints = iGeom.int(points: ePoints)
@@ -61,7 +61,7 @@ public struct Triangulator {
     /// - Parameter points: Linear array of your polygon vertices listed in a clockwise direction.
     /// - Throws: `DelaunayError`
     /// - Returns: Indices of triples which form triangles in clockwise direction
-    public func triangulateDelaunay(points: [f2]) throws -> [Int] {
+    public func triangulateDelaunay(points: [simd_double2]) throws -> [Int] {
         let iPoints = iGeom.int(points: points)
         let shape = PlainShape(points: iPoints)
         return try shape.delaunay(extraPoints: nil).trianglesIndices
@@ -74,7 +74,7 @@ public struct Triangulator {
     /// - Parameter extraPoints: extra points for tessellation
     /// - Throws: `DelaunayError`
     /// - Returns: Indices of triples which form triangles in clockwise direction
-    public func triangulateDelaunay(points: [f2], hull: ArraySlice<f2>, holes: [ArraySlice<f2>]?, extraPoints: [f2]?) throws -> [Int] {
+    public func triangulateDelaunay(points: [simd_double2], hull: ArraySlice<simd_double2>, holes: [ArraySlice<simd_double2>]?, extraPoints: [simd_double2]?) throws -> [Int] {
         let shape = PlainShape(iGeom: iGeom, points: points, hull: hull, holes: holes)
         if let ePoints = extraPoints {
             let iPoints = iGeom.int(points: ePoints)
@@ -91,7 +91,7 @@ public struct Triangulator {
     ///   - holes: array of ranges for all holes
     /// - Throws: `DelaunayError`
     /// - Returns: Indices of arrays which form polygons in clockwise direction. Example: n0, i0, i1, ... i(n0-1), n1, j0, j1, ... j(n1-1), ...
-    public func polygonate(points: [f2], hull: ArraySlice<f2>, holes: [ArraySlice<f2>]?) throws -> [Int] {
+    public func polygonate(points: [simd_double2], hull: ArraySlice<simd_double2>, holes: [ArraySlice<simd_double2>]?) throws -> [Int] {
         let shape = PlainShape(iGeom: iGeom, points: points, hull: hull, holes: holes)
         return try shape.delaunay(extraPoints: nil).convexPolygonsIndices
     }

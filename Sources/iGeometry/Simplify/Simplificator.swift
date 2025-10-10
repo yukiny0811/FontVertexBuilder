@@ -30,10 +30,10 @@ public struct Simplificator {
     public let strategy: Strategy
     public let minDistance: Int64
     public let minArea: Int64
-    public let maxCos: Float
+    public let maxCos: Double
 
     
-    public init(strategy: Strategy, minDistance: Int64, minArea: Int64, minAngle grad: Float) {
+    public init(strategy: Strategy, minDistance: Int64, minArea: Int64, minAngle grad: Double) {
         self.strategy = strategy
         self.minDistance = minDistance
         self.minArea = minArea
@@ -41,7 +41,7 @@ public struct Simplificator {
     }
 
     
-    public init(strategy: Strategy = .linear, minDistance: Int64 = 10, minAngle grad: Float = 0.1) {
+    public init(strategy: Strategy = .linear, minDistance: Int64 = 10, minAngle grad: Double = 0.1) {
         self.strategy = strategy
         self.minDistance = minDistance
         self.minArea = minDistance * minDistance

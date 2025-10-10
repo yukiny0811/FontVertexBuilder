@@ -8,18 +8,18 @@
 import Foundation
 import SimpleSimdSwift
 
-public typealias SVGGlyphLine = [f2]
+public typealias SVGGlyphLine = [simd_double2]
 
 public struct SVGPathObject {
-    public init(glyphs: [SVGGlyphLine], offset: f2) {
+    public init(glyphs: [SVGGlyphLine], offset: simd_double2) {
         self.glyphs = glyphs
         self.offset = offset
     }
     public var glyphs: [SVGGlyphLine]
-    public var offset: f2
+    public var offset: simd_double2
 }
 
 public struct TriangulatedSVGPath {
     public var glyphLines: [SVGGlyphLine]
-    public var offset: f2
+    public var offset: simd_double2
 }

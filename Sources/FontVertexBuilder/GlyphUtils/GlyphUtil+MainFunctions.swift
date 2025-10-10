@@ -37,21 +37,21 @@ import SimpleSimdSwift
 public extension GlyphUtil {
     enum MainFunctions {
         static func adaptiveQubicBezierCurve2(
-            a: f2,
-            b: f2,
-            c: f2,
-            d: f2,
-            aVel: f2,
-            bVel: f2,
-            cVel: f2,
-            angleLimit: Float,
+            a: simd_double2,
+            b: simd_double2,
+            c: simd_double2,
+            d: simd_double2,
+            aVel: simd_double2,
+            bVel: simd_double2,
+            cVel: simd_double2,
+            angleLimit: Double,
             depth: Int,
-            line: inout [f2],
+            line: inout [simd_double2],
             maxDepth: Int
         ) {
             if depth > maxDepth { return }
-            let startMiddleAngle: Float = acos(simd_dot(aVel, bVel))
-            let middleEndAngle: Float = acos(simd_dot(bVel, cVel))
+            let startMiddleAngle: Double = acos(simd_dot(aVel, bVel))
+            let middleEndAngle: Double = acos(simd_dot(bVel, cVel))
             if startMiddleAngle + middleEndAngle > angleLimit {
                 let ab = (a+b) * 0.5
                 let bc = (b+c) * 0.5
@@ -67,19 +67,19 @@ public extension GlyphUtil {
             }
         }
         static func adaptiveQuadraticBezierCurve2(
-            a: simd_float2,
-            b: simd_float2,
-            c: simd_float2,
-            aVel: simd_float2,
-            bVel: simd_float2,
-            cVel: simd_float2,
-            angleLimit: Float,
+            a: simd_double2,
+            b: simd_double2,
+            c: simd_double2,
+            aVel: simd_double2,
+            bVel: simd_double2,
+            cVel: simd_double2,
+            angleLimit: Double,
             depth: Int,
-            line: inout [simd_float2]
+            line: inout [simd_double2]
         ) {
             if depth > 8 { return }
-            let startMiddleAngle: Float = acos(simd_dot(aVel, bVel))
-            let middleEndAngle: Float = acos(simd_dot(bVel, cVel))
+            let startMiddleAngle: Double = acos(simd_dot(aVel, bVel))
+            let middleEndAngle: Double = acos(simd_dot(bVel, cVel))
             if startMiddleAngle + middleEndAngle > angleLimit {
                 let ab = (a+b) * 0.5
                 let bc = (b+c) * 0.5
@@ -91,13 +91,13 @@ public extension GlyphUtil {
                 adaptiveQuadraticBezierCurve2(a: abc, b: bc, c: c, aVel: bVel, bVel: eVel, cVel: cVel, angleLimit: angleLimit, depth: depth+1, line: &line)
             }
         }
-        static func getGlyphLines(_ glyphPath: CGPath, _ angleLimit: Float, _ distanceLimit: Float, maxDepth: Int) -> [GlyphLine] {
+        static func getGlyphLines(_ glyphPath: CGPath, _ angleLimit: Double, _ distanceLimit: Double, maxDepth: Int) -> [GlyphLine] {
             var myPath = GlyphLine()
             var myGlyphPaths = [GlyphLine]()
             glyphPath.applyWithBlock { (elementPtr: UnsafePointer<CGPathElement>) in
                 let element = elementPtr.pointee
                 var pointsPtr = element.points
-                let pt = simd_make_float2(Float(pointsPtr.pointee.x), Float(pointsPtr.pointee.y))
+                let pt = simd_double2(Double(pointsPtr.pointee.x), Double(pointsPtr.pointee.y))
 
                 switch element.type {
                 case .moveToPoint:
@@ -105,11 +105,11 @@ public extension GlyphUtil {
                 case .addLineToPoint:
                     let myA = myPath.last!
                     let length = simd_length(pt - myA)
-                    var data: [simd_float2] = []
+                    var data: [simd_double2] = []
                     if length > distanceLimit {
                         let sections = Int(max(ceil(length / distanceLimit), 2))
-                        let inc = 1.0 / Float(sections - 1)
-                        var t = simd_float2(0.0, 0.0)
+                        let inc = 1.0 / Double(sections - 1)
+                        var t = simd_double2(0.0, 0.0)
                         for _ in 0..<sections {
                             data.append(simd_mix(myA, pt, t))
                             t += inc
@@ -125,11 +125,11 @@ public extension GlyphUtil {
                     let myB = pt
                     pointsPtr += 1
                     let myA = myPath.last!
-                    let myC = simd_make_float2(Float(pointsPtr.pointee.x), Float(pointsPtr.pointee.y))
+                    let myC = simd_double2(Double(pointsPtr.pointee.x), Double(pointsPtr.pointee.y))
                     let aVel = simd_normalize(GlyphUtil.HelperFunctions.quadraticBezierVelocity2(myA, myB, myC, 0.0))
                     let bVel = simd_normalize(GlyphUtil.HelperFunctions.quadraticBezierVelocity2(myA, myB, myC, 0.5))
                     let cVel = simd_normalize(GlyphUtil.HelperFunctions.quadraticBezierVelocity2(myA, myB, myC, 1.0))
-                    var data: [simd_float2] = []
+                    var data: [simd_double2] = []
                     data.append(myA)
                     GlyphUtil.MainFunctions.adaptiveQuadraticBezierCurve2(a: myA, b: myB, c: myC, aVel: aVel, bVel: bVel, cVel: cVel, angleLimit: angleLimit, depth: 0, line: &data)
                     data.append(myC)
@@ -139,14 +139,14 @@ public extension GlyphUtil {
                     let myA = myPath.last!
                     let myB = pt
                     pointsPtr += 1
-                    let myC = simd_make_float2(Float(pointsPtr.pointee.x), Float(pointsPtr.pointee.y))
+                    let myC = simd_double2(Double(pointsPtr.pointee.x), Double(pointsPtr.pointee.y))
                     pointsPtr += 1
-                    let myD = simd_make_float2(Float(pointsPtr.pointee.x), Float(pointsPtr.pointee.y))
-                    
+                    let myD = simd_double2(Double(pointsPtr.pointee.x), Double(pointsPtr.pointee.y))
+
                     let aVel = simd_normalize(GlyphUtil.HelperFunctions.cubicBezierVelocity2(myA, myB, myC, myD, 0.0))
                     let bVel = simd_normalize(GlyphUtil.HelperFunctions.cubicBezierVelocity2(myA, myB, myC, myD, 0.5))
                     let cVel = simd_normalize(GlyphUtil.HelperFunctions.cubicBezierVelocity2(myA, myB, myC, myD, 1.0))
-                    var data: [simd_float2] = []
+                    var data: [simd_double2] = []
                     data.append(myA)
                     GlyphUtil.MainFunctions.adaptiveQubicBezierCurve2(a: myA, b: myB, c: myC, d: myD, aVel: aVel, bVel: bVel, cVel: cVel, angleLimit: angleLimit, depth: 0, line: &data, maxDepth: maxDepth)
                     data.append(myD)
@@ -158,11 +158,11 @@ public extension GlyphUtil {
                     }
                     let myA = myPath.last!
                     let length = simd_length(pt - myA)
-                    var data: [simd_float2] = []
+                    var data: [simd_double2] = []
                     if length > distanceLimit {
                         let sections = Int(max(ceil(length / distanceLimit), 2))
-                        let inc = 1.0 / Float(sections - 1)
-                        var t = simd_float2(0.0, 0.0)
+                        let inc = 1.0 / Double(sections - 1)
+                        var t = simd_double2(0.0, 0.0)
                         for _ in 0..<sections {
                             data.append(simd_mix(myA, pt, t))
                             t += inc
@@ -183,9 +183,9 @@ public extension GlyphUtil {
             }
             return myGlyphPaths
         }
-        typealias Hole = [f2]
+        typealias Hole = [simd_double2]
         class TriangulateHelperData {
-            public var path: [f2] = []
+            public var path: [simd_double2] = []
             public var holes: [Hole] = []
         }
         
@@ -194,7 +194,7 @@ public extension GlyphUtil {
         private static func triangulate(_ calculatedPaths: [LetterPath], isClockwiseFont: Bool) -> [TriangulatedLetterPath] {
             var triangulatedPaths: [TriangulatedLetterPath] = []
             for letter in calculatedPaths {
-                triangulatedPaths.append(TriangulatedLetterPath(glyphLines: [], offset: f3(letter.offset.x, letter.offset.y, 0)))
+                triangulatedPaths.append(TriangulatedLetterPath(glyphLines: [], offset: simd_double3(letter.offset.x, letter.offset.y, 0)))
                 var tempHelperDatas: [TriangulateHelperData] = []
                 for portion in letter.glyphs {
                     if tempHelperDatas.isEmpty {
@@ -213,8 +213,8 @@ public extension GlyphUtil {
                     }
                 }
                 for helperData in tempHelperDatas {
-                    let allPath: [f2] = helperData.path + helperData.holes.reduce([], +)
-                    var slices: [ArraySlice<f2>] = []
+                    let allPath: [simd_double2] = helperData.path + helperData.holes.reduce([], +)
+                    var slices: [ArraySlice<simd_double2>] = []
                     var currentIndex = helperData.path.count
                     for hole in helperData.holes {
                         slices.append(allPath[currentIndex..<currentIndex+hole.count])
@@ -226,7 +226,7 @@ public extension GlyphUtil {
                         holes: slices,
                         extraPoints: nil) {
                         triangulatedPaths[triangulatedPaths.count-1].glyphLines.append( triangles.map{
-                            f3(allPath[$0].x, allPath[$0].y, 0) + f3(letter.offset.x, letter.offset.y, 0)
+                            simd_double3(allPath[$0].x, allPath[$0].y, 0) + simd_double3(letter.offset.x, letter.offset.y, 0)
                         })
                     }
                 }
@@ -242,7 +242,7 @@ public extension GlyphUtil {
             return triangulatedPaths
         }
         
-        public static func triangulateWithoutLetterOffset(_ calculatedPaths: [LetterPath]) -> (paths: [TriangulatedLetterPath], letterOffsets: [f3]) {
+        public static func triangulateWithoutLetterOffset(_ calculatedPaths: [LetterPath]) -> (paths: [TriangulatedLetterPath], letterOffsets: [simd_double3]) {
             var result = triangulateWithoutLetterOffset(calculatedPaths, isClockwiseFont: true)
             if result.paths.reduce(0, { r, elem in r + elem.glyphLines.count }) == 0 {
                 result = triangulateWithoutLetterOffset(calculatedPaths, isClockwiseFont: false)
@@ -250,11 +250,11 @@ public extension GlyphUtil {
             return result
         }
         
-        private static func triangulateWithoutLetterOffset(_ calculatedPaths: [LetterPath], isClockwiseFont: Bool) -> (paths: [TriangulatedLetterPath], letterOffsets: [f3]) {
+        private static func triangulateWithoutLetterOffset(_ calculatedPaths: [LetterPath], isClockwiseFont: Bool) -> (paths: [TriangulatedLetterPath], letterOffsets: [simd_double3]) {
             var triangulatedPaths: [TriangulatedLetterPath] = []
-            var letterOffsets: [f3] = []
+            var letterOffsets: [simd_double3] = []
             for letter in calculatedPaths {
-                triangulatedPaths.append(TriangulatedLetterPath(glyphLines: [], offset: f3(letter.offset.x, letter.offset.y, 0)))
+                triangulatedPaths.append(TriangulatedLetterPath(glyphLines: [], offset: simd_double3(letter.offset.x, letter.offset.y, 0)))
                 var tempHelperDatas: [TriangulateHelperData] = []
                 for portion in letter.glyphs {
                     if tempHelperDatas.isEmpty {
@@ -273,8 +273,8 @@ public extension GlyphUtil {
                     }
                 }
                 for helperData in tempHelperDatas {
-                    let allPath: [f2] = helperData.path + helperData.holes.reduce([], +)
-                    var slices: [ArraySlice<f2>] = []
+                    let allPath: [simd_double2] = helperData.path + helperData.holes.reduce([], +)
+                    var slices: [ArraySlice<simd_double2>] = []
                     var currentIndex = helperData.path.count
                     for hole in helperData.holes {
                         slices.append(allPath[currentIndex..<currentIndex+hole.count])
@@ -286,9 +286,9 @@ public extension GlyphUtil {
                         holes: slices,
                         extraPoints: nil) {
                         triangulatedPaths[triangulatedPaths.count-1].glyphLines.append( triangles.map{
-                            f3(allPath[$0].x, allPath[$0].y, 0)
+                            simd_double3(allPath[$0].x, allPath[$0].y, 0)
                         })
-                        letterOffsets.append(f3(letter.offset.x, letter.offset.y, 0))
+                        letterOffsets.append(simd_double3(letter.offset.x, letter.offset.y, 0))
                     }
                 }
             }

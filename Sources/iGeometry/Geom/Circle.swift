@@ -10,10 +10,10 @@ import SimpleSimdSwift
 
 public struct Circle {
     
-    public let center: f2
-    public let radius: Float
-    
-    public init(center: f2, radius: Float) {
+    public let center: simd_double2
+    public let radius: Double
+
+    public init(center: simd_double2, radius: Double) {
         self.center = center
         self.radius = radius
     }

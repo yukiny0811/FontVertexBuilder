@@ -13,18 +13,18 @@ public struct IntGeom {
     public static let defGeom = IntGeom()
     
     public static let maxBits = 31
-    public let scale: Float
-    public let invertScale: Float
-    public let sqrInvertScale: Float
+    public let scale: Double
+    public let invertScale: Double
+    public let sqrInvertScale: Double
+
     
-    
-    public init(scale: Float = 10000) {
+    public init(scale: Double = 10000) {
         self.scale = scale
         self.invertScale = 1 / scale
         self.sqrInvertScale = 1 / scale / scale
     }
     
-    public func int(points: [f2]) -> [IntPoint] {
+    public func int(points: [simd_double2]) -> [IntPoint] {
         let n = points.count
         var array = Array<IntPoint>(repeating: .zero, count: n)
         var i = 0
@@ -37,7 +37,7 @@ public struct IntGeom {
     }
     
     
-    public func int(paths: [[f2]]) -> [[IntPoint]] {
+    public func int(paths: [[simd_double2]]) -> [[IntPoint]] {
         let n = paths.count
         var array = [[IntPoint]]()
         array.reserveCapacity(n)
@@ -50,37 +50,37 @@ public struct IntGeom {
     }
     
     
-    public func float(int: Int64) -> Float {
-        Float(int) * invertScale
+    public func float(int: Int64) -> Double {
+        Double(int) * invertScale
     }
     
     
-    public func sqrFloat(int: Int64) -> Float {
-        Float(int) * sqrInvertScale
+    public func sqrFloat(int: Int64) -> Double {
+        Double(int) * sqrInvertScale
     }
     
     
-    public func float(point: IntPoint) -> f2 {
-        f2(x: Float(point.x) * invertScale, y: Float(point.y) * invertScale)
+    public func float(point: IntPoint) -> simd_double2 {
+        simd_double2(x: Double(point.x) * invertScale, y: Double(point.y) * invertScale)
     }
     
     
-    public func float(points: [IntPoint]) -> [f2] {
+    public func float(points: [IntPoint]) -> [simd_double2] {
         let n = points.count
-        var array = Array<f2>(repeating: .zero, count: n)
+        var array = Array<simd_double2>(repeating: .zero, count: n)
         var i = 0
         while i < n {
             let point = points[i]
-            array[i] = f2(x: Float(point.x) * invertScale, y: Float(point.y) * invertScale)
+            array[i] = simd_double2(x: Double(point.x) * invertScale, y: Double(point.y) * invertScale)
             i &+= 1
         }
         return array
     }
     
     
-    public func float(paths: [[IntPoint]]) -> [[f2]] {
+    public func float(paths: [[IntPoint]]) -> [[simd_double2]] {
         let n = paths.count
-        var array = [[f2]]()
+        var array = [[simd_double2]]()
         array.reserveCapacity(n)
         var i = 0
         while i < n {
