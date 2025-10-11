@@ -41,7 +41,7 @@ public extension PlainShape {
             return result
         }
         
-//        result = self.validateSamePoints()
+        result = self.validateSamePoints()
 
         return result
     }
@@ -49,6 +49,7 @@ public extension PlainShape {
     private func validateVerticesList() -> Validation {
         var i = 0
         for layout in layouts {
+            if layout.begin > layout.end { continue }
             let isCCW = self.isClockWise(begin: layout.begin, end: layout.end)
             if layout.isHole {
                 if isCCW {
@@ -148,10 +149,12 @@ public extension PlainShape {
     }
     
     private func isIntersected(first: Layout, second: Layout) -> (Validation.Edge, Validation.Edge)? {
+        if first.begin > first.end { return nil }
         for i in first.begin...first.end {
             let i1 = i + 1 <= first.end ? i + 1 : first.begin
             let a = self.points[i]
             let b = self.points[i1]
+            if second.begin > second.end { return nil }
             for j in second.begin...second.end {
                 let j1 = j + 1 <= second.end ? j + 1 : second.begin
                 let c = self.points[j]
