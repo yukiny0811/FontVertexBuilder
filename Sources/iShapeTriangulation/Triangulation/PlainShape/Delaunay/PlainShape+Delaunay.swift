@@ -40,7 +40,7 @@ public extension PlainShape {
             self.edges.removeAll(keepingCapacity: true)
         }
         
-        mutating func add(a: Vertex, b: Vertex, c: Vertex) {
+        mutating func add(a: Vertex, b: Vertex, c: Vertex) throws {
             guard a.index != b.index && a.index != c.index && b.index != c.index else {
                 // ignore triangle with tween vertices
                 return
@@ -54,6 +54,9 @@ public extension PlainShape {
             )
             
             if let ac = self.pop(a: a.index, b: c.index) {
+                guard triangles.count > ac.neighbor else {
+                    throw CustomError.indexOutOfRange
+                }
                 var neighbor = triangles[ac.neighbor]
                 neighbor.neighbors.a = triangle.index
                 triangle.neighbors.b = neighbor.index
@@ -61,6 +64,9 @@ public extension PlainShape {
             }
             
             if let ab = self.pop(a: a.index, b: b.index) {
+                guard triangles.count > ab.neighbor else {
+                    throw CustomError.indexOutOfRange
+                }
                 var neighbor = triangles[ab.neighbor]
                 neighbor.neighbors.a = triangle.index
                 triangle.neighbors.c = neighbor.index
@@ -110,7 +116,7 @@ public extension PlainShape {
         
         var links = layout.links
         for index in layout.indices {
-            PlainShape.triangulate(index: index, links: &links, triangleStack: &triangleStack)
+            try PlainShape.triangulate(index: index, links: &links, triangleStack: &triangleStack)
             triangleStack.reset()
         }
         
@@ -135,7 +141,7 @@ public extension PlainShape {
         return delaunay
     }
     
-    private static func triangulate(index: Int, links: inout [Link], triangleStack: inout TriangleStack) {
+    private static func triangulate(index: Int, links: inout [Link], triangleStack: inout TriangleStack) throws {
         var c = links[index]
         
         var a0 = links[c.next]
@@ -158,8 +164,8 @@ public extension PlainShape {
             }
             
             if aBit0 <= bBit1 && bBit0 <= aBit1 {
-                triangleStack.add(a: c.vertex, b: a0.vertex, c: b0.vertex)
-                
+                try triangleStack.add(a: c.vertex, b: a0.vertex, c: b0.vertex)
+
                 a0.prev = b0.this
                 b0.next = a0.this
                 links[a0.this] = a0
@@ -182,8 +188,8 @@ public extension PlainShape {
                         let isCCW_or_Line = IntTriangle.isCCW_or_Line(a: cx.vertex.point, b: ax0.vertex.point, c: ax1.vertex.point)
                         
                         if isCCW_or_Line {
-                            triangleStack.add(a: ax0.vertex, b: ax1.vertex, c: cx.vertex)
-                            
+                            try triangleStack.add(a: ax0.vertex, b: ax1.vertex, c: cx.vertex)
+
                             ax1.prev = cx.this
                             cx.next = ax1.this
                             links[cx.this] = cx
@@ -213,8 +219,8 @@ public extension PlainShape {
                     repeat {
                         let isCCW_or_Line = IntTriangle.isCCW_or_Line(a: cx.vertex.point, b: bx1.vertex.point, c: bx0.vertex.point)
                         if isCCW_or_Line {
-                            triangleStack.add(a: bx0.vertex, b: cx.vertex, c: bx1.vertex)
-                            
+                            try triangleStack.add(a: bx0.vertex, b: cx.vertex, c: bx1.vertex)
+
                             bx1.next = cx.this
                             cx.prev = bx1.this
                             links[cx.this] = cx
@@ -245,8 +251,8 @@ public extension PlainShape {
                 aBit0 = a0.vertex.point.bitPack
                 bBit0 = b0.vertex.point.bitPack
                 
-                triangleStack.add(a: c.vertex, b: a0.vertex, c: b0.vertex)
-                
+                try triangleStack.add(a: c.vertex, b: a0.vertex, c: b0.vertex)
+
                 a0.prev = b0.this
                 b0.next = a0.this
                 links[a0.this] = a0
