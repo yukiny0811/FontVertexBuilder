@@ -224,7 +224,7 @@ open class PathText {
     func addGlyphGeometryData(_ glyph: CGGlyph, _ glyphPosition: CGPoint, _ origin: CGPoint, maxDepth: Int) {
         guard let framePivot = framePivot, let verticalOffset = verticalOffset else { return }
         if let glyphPath = ctFont.createPathForGlyph(glyph: glyph, matrix: nil) {
-            let glyphPaths = GlyphUtil.MainFunctions.getGlyphLines(glyphPath, angleLimit, fontSize*10, maxDepth: maxDepth)
+            let glyphPaths = GlyphUtil.MainFunctions.getGlyphLines(glyphPath, angleLimit, fontSize, maxDepth: maxDepth)
             let glyphOffset = simd_double2(Double(glyphPosition.x + origin.x - framePivot.x), Double(glyphPosition.y + origin.y - framePivot.y - verticalOffset))
             calculatedPaths.append(LetterPath(glyphs: glyphPaths, offset: glyphOffset))
         }
